@@ -6,6 +6,11 @@
   flex-direction: column;
 }
 
+.sidebar h1 {
+  color: #1a73e8;
+  margin-bottom: 10px;
+}
+
 .sidebar-item {
   padding: 10px;
   cursor: pointer;

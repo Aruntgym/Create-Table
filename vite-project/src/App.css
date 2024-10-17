@@ -6,6 +6,11 @@
   background-color: #f0f0f0;
 }
 
+/* .app h1 {
+  color: #1a73e8;
+  margin-bottom: 10px;
+} */
+
 .content {
   flex: 1;
   padding: 20px;
