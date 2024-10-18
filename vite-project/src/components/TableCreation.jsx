@@ -2,58 +2,46 @@ import React, { useState } from "react";
 import "./TableCreation.css";
 
 const TableCreator = () => {
-  const [rows, setRows] = useState(3);
-  const [cols, setCols] = useState(3);
-  const [tableData, setTableData] = useState(
-    Array.from({ length: 3 }, () => Array(3).fill(""))
-  );
-  const [tableHeaders, setTableHeaders] = useState([
-    "Header 1",
-    "Header 2",
-    "Header 3",
-  ]);
+  const [rows, setRows] = useState(0);
+  const [cols, setCols] = useState(0);
+  const [tableData, setTableData] = useState([]);
+  const [tableHeaders, setTableHeaders] = useState([]);
   const [cellWidth, setCellWidth] = useState(100);
   const [cellHeight, setCellHeight] = useState(30);
   const [showHeaders, setShowHeaders] = useState(true);
   const [isTableCreated, setIsTableCreated] = useState(false);
+  const [manualInput, setManualInput] = useState({ rows: 0, cols: 0 });
+  const [selectedRows, setSelectedRows] = useState(0);
+  const [selectedCols, setSelectedCols] = useState(0);
 
-  const handleMouseOver = (row, col) => {
-    setRows(row + 1);
-    setCols(col + 1);
+  // Handle input for rows and columns manually
+  const handleManualInputChange = (e) => {
+    const { name, value } = e.target;
+    setManualInput({ ...manualInput, [name]: parseInt(value) || 0 });
   };
 
-  const handleRowsChange = (e) => {
-    const newRows = parseInt(e.target.value, 10);
-    if (isNaN(newRows) || newRows <= 0) return;
-    setRows(newRows);
-    adjustTableData(newRows, cols);
+  // Handle manual table creation
+  const createTableManually = () => {
+    setRows(manualInput.rows);
+    setCols(manualInput.cols);
+    adjustTableData(manualInput.rows, manualInput.cols);
+    setIsTableCreated(true);
   };
 
-  const handleColsChange = (e) => {
-    const newCols = parseInt(e.target.value, 10);
-    if (isNaN(newCols) || newCols <= 0) return;
-    setCols(newCols);
-    adjustTableData(rows, newCols);
+  const handleMouseEnter = (r, c) => {
+    setSelectedRows(r + 1);
+    setSelectedCols(c + 1);
   };
 
   const adjustTableData = (newRows, newCols) => {
-    const newTableData = [...tableData];
-    while (newTableData.length < newRows) {
-      newTableData.push(Array(newCols).fill(""));
-    }
-    newTableData.length = newRows;
-    newTableData.forEach((row) => {
-      while (row.length < newCols) {
-        row.push("");
-      }
-      row.length = newCols;
-    });
+    const newTableData = Array.from({ length: newRows }, () =>
+      Array(newCols).fill("")
+    );
+    const newHeaders = Array.from(
+      { length: newCols },
+      (_, index) => `Header ${index + 1}`
+    );
     setTableData(newTableData);
-    const newHeaders = [...tableHeaders];
-    while (newHeaders.length < newCols) {
-      newHeaders.push(`Header ${newHeaders.length + 1}`);
-    }
-    newHeaders.length = newCols;
     setTableHeaders(newHeaders);
   };
 
@@ -69,17 +57,18 @@ const TableCreator = () => {
     setTableHeaders(updatedHeaders);
   };
 
-  const createTable = () => {
+  const createTableFromGrid = () => {
+    setRows(selectedRows);
+    setCols(selectedCols);
+    adjustTableData(selectedRows, selectedCols);
     setIsTableCreated(true);
   };
 
   const handleSave = () => {
-    // Logic for saving table data, such as exporting to a file or saving to a database
     console.log("Table saved", { tableData, tableHeaders });
   };
 
   const handleShare = () => {
-    // Logic for sharing the table, such as generating a link or sharing on social media
     console.log("Table shared", { tableData, tableHeaders });
   };
 
@@ -112,10 +101,7 @@ const TableCreator = () => {
                   onChange={(e) =>
                     handleCellChange(rowIdx, colIdx, e.target.value)
                   }
-                  style={{
-                    width: `${cellWidth}px`,
-                    height: `${cellHeight}px`,
-                  }}
+                  style={{ width: `${cellWidth}px`, height: `${cellHeight}px` }}
                 />
               </td>
             ))}
@@ -127,80 +113,108 @@ const TableCreator = () => {
 
   return (
     <div className="table-creator">
-      <h2>Create Dynamic Table</h2>
-      <div className="table-creation">
-        <h3>Table Settings</h3>
-        <label>
-          Rows:
-          <input
-            type="number"
-            value={rows}
-            onChange={handleRowsChange}
-            min="1"
-          />
-        </label>
-        <label>
-          Columns:
-          <input
-            type="number"
-            value={cols}
-            onChange={handleColsChange}
-            min="1"
-          />
-        </label>
-        <label>
-          Cell Width:
-          <input
-            type="number"
-            value={cellWidth}
-            onChange={(e) => setCellWidth(parseInt(e.target.value))}
-            min="10"
-          />
-        </label>
-        <label>
-          Cell Height:
-          <input
-            type="number"
-            value={cellHeight}
-            onChange={(e) => setCellHeight(parseInt(e.target.value))}
-            min="10"
-          />
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={showHeaders}
-            onChange={() => setShowHeaders(!showHeaders)}
-          />
-          Show Headers
-        </label>
-        <button onClick={createTable}>Create Table</button>
-      </div>
+      <div className="table-Ms">
+      <h2>Create Table</h2>
 
-      <div className="grid">
-        {[...Array(10)].map((_, row) => (
-          <div key={row} className="grid-row">
-            {[...Array(10)].map((_, col) => (
-              <div
-                key={col}
-                className={`grid-cell ${
-                  row < rows && col < cols ? "selected" : ""
-                }`}
-                onMouseOver={() => handleMouseOver(row, col)}
-              ></div>
-            ))}
+      {!isTableCreated && (
+        <div className="manual-input">
+          <h3>Enter No.of Rows and Cols Manually:</h3>
+          <label>
+            Rows:
+            <input
+              type="number"
+              name="rows"
+              value={manualInput.rows}
+              onChange={handleManualInputChange}
+              min="1"
+            />
+          </label>
+          <label>
+            Columns:
+            <input
+              type="number"
+              name="cols"
+              value={manualInput.cols}
+              onChange={handleManualInputChange}
+              min="1"
+            />
+          </label>
+          <div className="table-WH">
+          <label>
+            Cell Width:
+            <input
+              type="number"
+              value={cellWidth}
+              onChange={(e) => setCellWidth(parseInt(e.target.value))}
+              min="10"
+            />
+          </label>
+          <label>
+            Cell Height:
+            <input
+              type="number"
+              value={cellHeight}
+              onChange={(e) => setCellHeight(parseInt(e.target.value))}
+              min="10"
+            />
+          </label>
+          <div className="table-checkbox">
+          <label>
+            <input
+              type="checkbox"
+              checked={showHeaders}
+              onChange={() => setShowHeaders(!showHeaders)}
+            />
+            Show Headers
+          </label>
           </div>
-        ))}
-      </div>
+          </div>
+          <p>
+            Selected: Rows {selectedRows} x cols {selectedCols}
+          </p>
+        </div>
+      )} 
 
-      <div className="generated-table">
-        {isTableCreated && renderTable()}
-        {isTableCreated && (
+      {!isTableCreated && (
+        <div className="grid-selection">
+          <div className="grid">
+            {[...Array(10)].map((_, row) => (
+              <div key={row} className="grid-row">
+                {[...Array(10)].map((_, col) => (
+                  <div
+                    key={col}
+                    className={`grid-cell ${
+                      row < selectedRows && col < selectedCols ? "selected" : ""
+                    }`}
+                    onMouseEnter={() => handleMouseEnter(row, col)}
+                    onClick={createTableFromGrid}
+                  ></div>
+                ))}
+              </div>
+            ))}
+              <div className="action-buttons">
+          <button onClick={createTableManually}>Create Table</button>
+          </div>
+          </div>
+        
+        </div>
+      )}
+
+      {isTableCreated && (
+        <div className="table-settings">
+         
+        </div>
+      )}
+
+      {isTableCreated && (
+        <div className="generated-table">
+          {renderTable()}
           <div className="action-buttons">
             <button onClick={handleSave}>Save</button>
             <button onClick={handleShare}>Share</button>
           </div>
-        )}
+        </div>
+      )}
       </div>
     </div>
   );

@@ -17,4 +17,4 @@ const Sidebar = ({ onOptionSelect }) => {
   );
 };
 
-export default Sidebar;
+export default Sidebar; 

@@ -1,35 +1,15 @@
 .table-creator {
   padding: 20px;
-  max-width: 100%;
-  margin: auto;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-  overflow: auto;
 }
 
-.table-creation {
+.manual-input,
+.grid-selection,
+.table-settings {
   margin-bottom: 20px;
 }
 
-.table-creation label {
-  display: block;
-  margin: 5px 0;
-}
-
-.table-creation input {
-  margin-left: 10px;
-  margin-bottom: 10px;
-}
-
-.table-creation button {
-  margin-top: 10px;
-  padding: 5px 10px;
-}
-
 .grid {
-  display: flex;
-  flex-direction: column;
+  display: inline-block;
   margin-bottom: 20px;
 }
 
@@ -38,29 +18,37 @@
 }
 
 .grid-cell {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
+  margin: 2px;
   border: 1px solid #ccc;
+  background-color: #e0e0e0;
+  cursor: pointer;
 }
 
 .grid-cell.selected {
-  background-color: #00f;
+  background-color: #007bff;
 }
 
-.generated-table {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
+.table-settings {
   margin-top: 20px;
 }
 
-th,
-td {
-  border: 1px solid #ddd;
-  padding: 5px;
+.generated-table {
+  margin-top: 20px;
+  
+}
+
+.action-buttons {
+  margin-top: 10px;
+}
+
+.table-WH{
+  margin-top: 10px;
+}
+
+.table-checkbox{
+  margin-top: 10px;
 }
 
 .action-buttons {
