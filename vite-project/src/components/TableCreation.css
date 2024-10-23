@@ -1,5 +1,11 @@
 .table-creator {
   padding: 20px;
+  background-color: #f9f9f9; /* Added background for clarity */
+  border-radius: 10px; /* Rounded corners for a modern look */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  width: 100%; /* Ensure it takes full width of container */
+  max-width: 350px; /* Constrain the width for small devices */
+  margin: 0 auto; /* Center the table creator */
 }
 
 .manual-input,
@@ -15,6 +21,7 @@
 
 .grid-row {
   display: flex;
+  justify-content: center; /* Align cells centrally */
 }
 
 .grid-cell {
@@ -24,10 +31,16 @@
   border: 1px solid #ccc;
   background-color: #e0e0e0;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transitions */
 }
 
 .grid-cell.selected {
   background-color: #007bff;
+  transform: scale(1.1); /* Slight enlargement on selection */
+}
+
+.grid-cell:hover {
+  background-color: #b0d4ff; /* Lighter color on hover */
 }
 
 .table-settings {
@@ -36,26 +49,52 @@
 
 .generated-table {
   margin-top: 20px;
-  
+  overflow: auto;
 }
 
-.action-buttons {
-  margin-top: 10px;
-}
-
-.table-WH{
-  margin-top: 10px;
-}
-
-.table-checkbox{
+.table-WH, .table-checkbox, .action-buttons {
   margin-top: 10px;
 }
 
 .action-buttons {
+  display: flex;
+  justify-content: flex-end; /* Ensure buttons are spaced out */
   margin-top: 10px;
 }
 
 .action-buttons button {
   margin-right: 10px;
-  padding: 5px 10px;
+  padding: 10px 15px; /* More padding for a modern button look */
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.action-buttons button:hover {
+  background-color: #0056b3;
+}
+
+.action-buttons button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .table-creator {
+    padding: 15px;
+    max-width: 100%;
+  }
+
+  .grid-cell {
+    width: 25px; /* Reduce cell size for smaller screens */
+    height: 25px;
+  }
+
+  .action-buttons button {
+    width: 100%;
+    margin: 5px 0;
+  }
 }
