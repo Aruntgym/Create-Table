@@ -16,6 +16,8 @@ const TableCreator = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedCell, setSelectedCell] = useState({ row: null, col: null });
   const [isTextWrap, setIsTextWrap] = useState(false);
+  const [hAlign, setHAlign] = useState("left");
+  const [showSharePopup, setShowSharePopup] = useState(false);
 
   // Handle input for rows and columns manually
   const handleManualInputChange = (e) => {
@@ -152,14 +154,54 @@ const TableCreator = () => {
   };
 
   const handleSave = () => {
-    console.log("Table saved", { tableData, tableHeaders });
-    alert("Table data has been logged to the console.");
+    // Create a single object that includes all the required data
+    const outputData = {
+      responses,
+      tableData,
+      tableHeaders,
+    };
+
+    // Convert the combined data to JSON format
+    try {
+      const jsonOutput = JSON.stringify(outputData, null, 2);
+      console.log("Table saved:", jsonOutput); // Logs the JSON formatted output to console
+      alert("Table data has been saved and logged to the console.");
+    } catch (error) {
+      console.error("Error saving the table data:", error);
+      alert("An error occurred while saving the table data. Please try again.");
+    }
   };
 
   const handleShare = () => {
-    console.log("Table shared", { tableData, tableHeaders });
-    alert("Table data has been shared (logged to console).");
+    setShowSharePopup(true);
   };
+
+  const handleCloseSharePopup = () => {
+    setShowSharePopup(false);
+  };
+
+  const shareViaEmail = () => {
+    const emailBody = encodeURIComponent(
+      "Here is the table data:\n\n" + JSON.stringify({ tableData, tableHeaders }, null, 2)
+    );
+    window.open(`mailto:?subject=Table Data&body=${emailBody}`, "_blank");
+  };
+
+  const shareViaGitHub = () => {
+    alert("Sharing via GitHub is not directly supported. Please copy the data and share manually.");
+  };
+
+  const shareViaWhatsApp = () => {
+    const message = encodeURIComponent(
+      "Here is the table data:\n\n" + JSON.stringify({ tableData, tableHeaders }, null, 2)
+    );
+    window.open(`https://wa.me/?text=${message}`, "_blank");
+  };
+
+  const shareViaMessage = () => {
+    alert("Sharing via SMS or messages may not be supported directly from a web browser.");
+  };
+
 
   const renderTable = () => (
     <table>
@@ -202,6 +244,7 @@ const TableCreator = () => {
                     height: isTextWrap ? "auto" : `${cellHeight}px`,
                     whiteSpace: isTextWrap ? "normal" : "nowrap",
                     overflowWrap: isTextWrap ? "break-word" : "normal",
+                    textAlign: hAlign,
                   }}
                 />
               </td>
@@ -215,13 +258,13 @@ const TableCreator = () => {
   return (
     <div className="table-creator">
       <div className="table-ms">
-        <h2>Create Table</h2>
+        <h4>Create Table</h4>
 
         {!isTableCreated && (
           <div className="manual-input">
-            <h3>Enter No. of Rows and Columns Manually:</h3>
-            <label>
-              Rows:
+            <h4>Enter No. of Rows and Columns Manually:</h4>
+            <label className="fields">
+              <div>Rows:</div>
               <input
                 type="number"
                 name="rows"
@@ -229,9 +272,10 @@ const TableCreator = () => {
                 onChange={handleManualInputChange}
                 min="1"
               />
-            </label><br/>
-            <label>
-              Columns:
+            </label>
+            <br />
+            <label className="fields">
+              <div>Columns: </div>
               <input
                 type="number"
                 name="cols"
@@ -241,8 +285,8 @@ const TableCreator = () => {
               />
             </label>
             <div className="table-WH">
-              <label>
-                Cell Width:
+              <label className="fields">
+                <div>Cell Width:</div>
                 <input
                   type="number"
                   value={cellWidth}
@@ -250,8 +294,8 @@ const TableCreator = () => {
                   min="10"
                 />
               </label>
-              <label>
-                Cell Height:
+              <label className="fields">
+                <div>Cell Height:</div>
                 <input
                   type="number"
                   value={cellHeight}
@@ -308,11 +352,49 @@ const TableCreator = () => {
           <div className="generated-table">
             {renderTable()}
             <div className="action-buttons">
+              <div className="action-buttons-2">
               <button onClick={handleSave}>Save</button>
               <button onClick={handleShare}>Share</button>
+              </div>
             </div>
           </div>
         )}
+
+         {/* Share Popup Modal */}
+      {showSharePopup && (
+        <div className="popup">
+          <div className="popup-content">
+            <h3>Share Table Data</h3>
+            <button onClick={shareViaEmail}>Share via Email</button>
+            <button onClick={shareViaGitHub}>Share via GitHub</button>
+            <button onClick={shareViaWhatsApp}>Share via WhatsApp</button>
+            <button onClick={shareViaMessage}>Share via Message</button>
+            <button onClick={handleCloseSharePopup}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* Popup CSS */}
+      <style jsx>{`
+        .popup {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: white;
+          padding: 20px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+          z-index: 1000;
+        }
+        .popup-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        button {
+          margin: 5px 0;
+        }
+      `}</style>
 
         {showPopup && (
           <div className="popup">
@@ -335,42 +417,9 @@ const TableCreator = () => {
               {/* Horizontal Alignment Options */}
               <div>
                 <h4>Horizontal Alignment</h4>
-                <button
-                  onClick={() =>
-                    setCellAlignment(
-                      selectedCell.row,
-                      selectedCell.col,
-                      "hAlign",
-                      "left"
-                    )
-                  }
-                >
-                  Left
-                </button>
-                <button
-                  onClick={() =>
-                    setCellAlignment(
-                      selectedCell.row,
-                      selectedCell.col,
-                      "hAlign",
-                      "center"
-                    )
-                  }
-                >
-                  Center
-                </button>
-                <button
-                  onClick={() =>
-                    setCellAlignment(
-                      selectedCell.row,
-                      selectedCell.col,
-                      "hAlign",
-                      "right"
-                    )
-                  }
-                >
-                  Right
-                </button>
+                <button onClick={() => setHAlign("left")}>Left</button>
+                <button onClick={() => setHAlign("center")}>Center</button>
+                <button onClick={() => setHAlign("right")}>Right</button>
               </div>
 
               {/* Vertical Alignment Options */}
@@ -442,37 +491,37 @@ const TableCreator = () => {
             padding: 20px;
             font-family: Arial, sans-serif;
           }
-          // .manual-input,
-          // .grid-selection,
-          // .generated-table {
-          //   margin-bottom: 20px;
-          // }
-          // .grid {
-          //   display: grid;
-          //   grid-template-rows: repeat(10, 20px);
-          //   grid-template-columns: repeat(10, 20px);
-          //   gap: 2px;
-          //   margin-bottom: 10px;
-          // }
-          // .grid-row {
-          //   display: contents;
-          // }
-          // .grid-cell {
-          //   width: 20px;
-          //   height: 20px;
-          //   background: #f0f0f0;
-          //   border: 1px solid #ccc;
-          //   cursor: pointer;
-          // }
-          // .grid-cell.selected {
-          //   background: #add8e6;
-          // }
-          // .action-buttons {
-          //   margin-top: 10px;
-          // }
-          // .action-buttons button {
-          //   margin-right: 10px;
-          // }
+          .manual-input,
+          .grid-selection,
+          .generated-table {
+            margin-bottom: 20px;
+          }
+          .grid {
+            display: grid;
+            grid-template-rows: repeat(10, 20px);
+            grid-template-columns: repeat(10, 20px);
+            gap: 2px;
+            margin-bottom: 10px;
+          }
+          .grid-row {
+            display: contents;
+          }
+          .grid-cell {
+            width: 20px;
+            height: 20px;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            cursor: pointer;
+          }
+          .grid-cell.selected {
+            background: #add8e6;
+          }
+          .action-buttons {
+            margin-top: 10px;
+          }
+          .action-buttons button {
+            margin-right: 10px;
+          }
           table {
             border-collapse: collapse;
             width: auto;
