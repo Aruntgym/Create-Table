@@ -4,11 +4,12 @@ import "./TableCreation.css";
 const TableCreator = () => {
   const [rows, setRows] = useState(0);
   const [cols, setCols] = useState(0);
+  const [responses, setResponses] = useState({});
   const [tableData, setTableData] = useState([]);
   const [tableHeaders, setTableHeaders] = useState([]);
   const [cellWidth, setCellWidth] = useState(100);
   const [cellHeight, setCellHeight] = useState(30);
-  const [showHeaders, setShowHeaders] = useState(true);
+  const [showHeaders, setShowHeaders] = useState(false);
   const [isTableCreated, setIsTableCreated] = useState(false);
   const [manualInput, setManualInput] = useState({ rows: 0, cols: 0 });
   const [selectedRows, setSelectedRows] = useState(0);
@@ -153,12 +154,13 @@ const TableCreator = () => {
     setTableData(updatedData);
   };
 
-  const handleSave = () => {
+  const handleSave = (e, key) => {
     // Create a single object that includes all the required data
     const outputData = {
       responses,
       tableData,
       tableHeaders,
+      [key]: e.target.value,
     };
 
     // Convert the combined data to JSON format
@@ -171,6 +173,7 @@ const TableCreator = () => {
       alert("An error occurred while saving the table data. Please try again.");
     }
   };
+  
 
   const handleShare = () => {
     setShowSharePopup(true);
@@ -200,6 +203,18 @@ const TableCreator = () => {
 
   const shareViaMessage = () => {
     alert("Sharing via SMS or messages may not be supported directly from a web browser.");
+  };
+
+  const shareViaCopyLink = () => {
+    const jsonData = JSON.stringify({ tableData, tableHeaders }, null, 2);
+    navigator.clipboard.writeText(jsonData)
+      .then(() => {
+        alert("Table data copied to clipboard!");
+      })
+      .catch((error) => {
+        console.error("Failed to copy text: ", error);
+        alert("An error occurred while copying the data. Please try again.");
+      });
   };
 
 
@@ -258,7 +273,7 @@ const TableCreator = () => {
   return (
     <div className="table-creator">
       <div className="table-ms">
-        <h4>Create Table</h4>
+        <h4></h4>
 
         {!isTableCreated && (
           <div className="manual-input">
@@ -347,13 +362,14 @@ const TableCreator = () => {
             </div>
           </div>
         )}
-
+        </div>
+        <div>
         {isTableCreated && (
           <div className="generated-table">
             {renderTable()}
             <div className="action-buttons">
               <div className="action-buttons-2">
-              <button onClick={handleSave}>Save</button>
+              <button onClick={(e) => handleSave(e, 'exampleKey')}>Save</button>
               <button onClick={handleShare}>Share</button>
               </div>
             </div>
@@ -369,6 +385,7 @@ const TableCreator = () => {
             <button onClick={shareViaGitHub}>Share via GitHub</button>
             <button onClick={shareViaWhatsApp}>Share via WhatsApp</button>
             <button onClick={shareViaMessage}>Share via Message</button>
+            <button onClick={shareViaCopyLink}>Share via link</button>
             <button onClick={handleCloseSharePopup}>Close</button>
           </div>
         </div>
